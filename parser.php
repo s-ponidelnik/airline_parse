@@ -12,7 +12,7 @@ include_once 'airlineParser.php';
 $curl = new parserCurl();
 $airlineParser = new airlineParser($curl);
 $airlineParser->parse(console::getInstance());
-$airlineParser->saveJson('airlines');
-
+$airlineParser->saveJson('airlines_updated');
+$airlineParser->saveSql('airlines');
 
 

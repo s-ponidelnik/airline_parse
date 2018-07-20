@@ -27,6 +27,24 @@ final class airlineParser
         file_put_contents(__DIR__ . 'airlineParser.php/' . $fileName . '.json', json_encode($this->data));
     }
 
+    public function saveSql($fileName)
+    {
+
+        file_put_contents(__DIR__ . 'airlineParser.php/' . $fileName . '.sql', $this->getSql());
+    }
+
+    private function getSql()
+    {
+        $sql = "INSERT INTO airline (`iata`, `icao`, `name`) VALUES ";
+        $sqlArr = [];
+        foreach ($this->data as $value) {
+            $value['NAME'] = str_replace('"', "'", $value['Airline']);
+            $sqlArr[] = '("' . implode('","', [$value['IATA_Code'], $value['ICAO_Code'], $value['Airline']]) . '")';
+        }
+        $sql = $sql . implode(',', $sqlArr);
+        return $sql;
+    }
+
     public function parse(outputInterface $output)
     {
         $this->output = $output;
@@ -81,6 +99,7 @@ final class airlineParser
             if (!empty($matches) && is_array($matches) && isset($match[2]) && isset($match[3])) {
                 $columnName = html_entity_decode($match[2]);
                 $columnName = str_replace(' ', '_', $columnName);
+                $columnName = str_replace('-', '_', $columnName);
                 $columnName = str_replace(':', '', $columnName);
                 $value = html_entity_decode($match[3]);
                 $data[$columnName] = $value;
